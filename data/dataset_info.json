@@ -622,5 +622,25 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+  "tulu_it": {
+    "hf_hub_url": "HanxuHU/tuluv2_100k_base_regen",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system_prompt"
+    }
+  },
+  "tulu_sit": {
+    "hf_hub_url": "HanxuHU/tuluv2_100k_seq",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system_prompt"
+    }
   }
 }
