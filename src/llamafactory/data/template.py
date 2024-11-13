@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union
 from transformers.utils.versions import require_version
 from typing_extensions import override
 
-from ..extras.logging import get_logger
+from ..extras import logging
 from .data_utils import Role
 from .formatter import EmptyFormatter, FunctionFormatter, StringFormatter, ToolFormatter
 from .mm_plugin import get_mm_plugin
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from .mm_plugin import BasePlugin
 
 
-logger = get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 @dataclass
@@ -147,7 +147,7 @@ class Template:
                 elif "eos_token" in elem and tokenizer.eos_token_id is not None:
                     token_ids += [tokenizer.eos_token_id]
             else:
-                raise ValueError("Input must be string, set[str] or dict[str, str], got {}".format(type(elem)))
+                raise ValueError(f"Input must be string, set[str] or dict[str, str], got {type(elem)}")
 
         return token_ids
 
@@ -275,12 +275,12 @@ def _add_or_replace_eos_token(tokenizer: "PreTrainedTokenizer", eos_token: str) 
     num_added_tokens = tokenizer.add_special_tokens({"eos_token": eos_token})
 
     if is_added:
-        logger.info("Add eos token: {}".format(tokenizer.eos_token))
+        logger.info_rank0(f"Add eos token: {tokenizer.eos_token}")
     else:
-        logger.info("Replace eos token: {}".format(tokenizer.eos_token))
+        logger.info_rank0(f"Replace eos token: {tokenizer.eos_token}")
 
     if num_added_tokens > 0:
-        logger.warning("New tokens have been added, make sure `resize_vocab` is True.")
+        logger.warning_rank0("New tokens have been added, make sure `resize_vocab` is True.")
 
 
 def _jinja_escape(content: str) -> str:
@@ -356,24 +356,21 @@ def get_template_and_fix_tokenizer(tokenizer: "PreTrainedTokenizer", data_args: 
     r"""
     Gets chat template and fixes the tokenizer.
     """
-    if data_args.template in ["llava", "paligemma", "qwen2_vl"]:
-        require_version(
-            "transformers>=4.45.0.dev0", "To fix: pip install git+https://github.com/huggingface/transformers.git"
-        )
-        require_version("accelerate>=0.34.0", "To fix: pip install accelerate>=0.34.0")
-
     if data_args.template is None:
         template = TEMPLATES["empty"]  # placeholder
     else:
         template = TEMPLATES.get(data_args.template, None)
         if template is None:
-            raise ValueError("Template {} does not exist.".format(data_args.template))
+            raise ValueError(f"Template {data_args.template} does not exist.")
+
+    if template.mm_plugin.__class__.__name__ != "BasePlugin":
+        require_version("transformers>=4.45.0", "To fix: pip install transformers>=4.45.0")
 
     if data_args.train_on_prompt and template.efficient_eos:
         raise ValueError("Current template does not support `train_on_prompt`.")
 
     if data_args.tool_format is not None:
-        logger.info("Using tool format: {}.".format(data_args.tool_format))
+        logger.info_rank0(f"Using tool format: {data_args.tool_format}.")
         eos_slots = [] if template.efficient_eos else [{"eos_token"}]
         template.format_function = FunctionFormatter(slots=eos_slots, tool_format=data_args.tool_format)
         template.format_tools = ToolFormatter(tool_format=data_args.tool_format)
@@ -391,21 +388,21 @@ def get_template_and_fix_tokenizer(tokenizer: "PreTrainedTokenizer", data_args: 
 
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
-        logger.info("Add pad token: {}".format(tokenizer.pad_token))
+        logger.info_rank0(f"Add pad token: {tokenizer.pad_token}")
 
     if stop_words:
         num_added_tokens = tokenizer.add_special_tokens(
             dict(additional_special_tokens=stop_words), replace_additional_special_tokens=False
         )
-        logger.info("Add {} to stop words.".format(",".join(stop_words)))
+        logger.info_rank0("Add {} to stop words.".format(",".join(stop_words)))
         if num_added_tokens > 0:
-            logger.warning("New tokens have been added, make sure `resize_vocab` is True.")
+            logger.warning_rank0("New tokens have been added, make sure `resize_vocab` is True.")
 
-    if template.replace_jinja_template:
+    if tokenizer.chat_template is None or template.replace_jinja_template:
         try:
             tokenizer.chat_template = _get_jinja_template(template, tokenizer)
-        except ValueError:
-            logger.info("Cannot add this chat template to tokenizer.")
+        except ValueError as e:
+            logger.info_rank0(f"Cannot add this chat template to tokenizer: {e}.")
 
     return template
 
@@ -645,6 +642,14 @@ _register_template(
 
 
 _register_template(
+    name="exaone",
+    format_user=StringFormatter(slots=["[|user|]{{content}}\n[|assistant|]"]),
+    format_system=StringFormatter(slots=["[|system|]{{content}}[|endofturn|]\n"]),
+    format_separator=EmptyFormatter(slots=["\n"]),
+)
+
+
+_register_template(
     name="falcon",
     format_user=StringFormatter(slots=["User: {{content}}\nFalcon:"]),
     format_separator=EmptyFormatter(slots=["\n"]),
@@ -682,6 +687,14 @@ _register_template(
     format_tools=ToolFormatter(tool_format="glm4"),
     format_prefix=EmptyFormatter(slots=["[gMASK]<sop>"]),
     stop_words=["<|user|>", "<|observation|>"],
+    efficient_eos=True,
+)
+
+
+_register_template(
+    name="index",
+    format_user=StringFormatter(slots=["reserved_0{{content}}reserved_1"]),
+    format_system=StringFormatter(slots=["<unk>{{content}}"]),
     efficient_eos=True,
 )
 
@@ -761,6 +774,107 @@ _register_template(
 
 
 _register_template(
+    name="llava_next",
+    format_user=StringFormatter(slots=["USER: {{content}} ASSISTANT:"]),
+    default_system=(
+        "A chat between a curious user and an artificial intelligence assistant. "
+        "The assistant gives helpful, detailed, and polite answers to the user's questions."
+    ),
+    mm_plugin=get_mm_plugin(name="llava_next", image_token="<image>"),
+)
+
+
+_register_template(
+    name="llava_next_llama3",
+    format_user=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>user<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>\n\n"
+            )
+        ]
+    ),
+    format_system=StringFormatter(slots=["<|start_header_id|>system<|end_header_id|>\n\n{{content}}<|eot_id|>"]),
+    format_observation=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>tool<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>\n\n"
+            )
+        ]
+    ),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
+    stop_words=["<|eot_id|>"],
+    replace_eos=True,
+    replace_jinja_template=False,
+    mm_plugin=get_mm_plugin(name="llava_next", image_token="<image>"),
+)
+
+
+_register_template(
+    name="llava_next_mistral",
+    format_user=StringFormatter(slots=["[INST] {{content}} [/INST]"]),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
+    mm_plugin=get_mm_plugin(name="llava_next", image_token="<image>"),
+)
+
+
+_register_template(
+    name="llava_next_qwen",
+    format_user=StringFormatter(slots=["<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"]),
+    format_system=StringFormatter(slots=["<|im_start|>system\n{{content}}<|im_end|>\n"]),
+    format_observation=StringFormatter(slots=["<|im_start|>tool\n{{content}}<|im_end|>\n<|im_start|>assistant\n"]),
+    format_separator=EmptyFormatter(slots=["\n"]),
+    default_system="You are a helpful assistant.",
+    stop_words=["<|im_end|>"],
+    replace_eos=True,
+    replace_jinja_template=False,
+    mm_plugin=get_mm_plugin(name="llava_next", image_token="<image>"),
+)
+
+
+_register_template(
+    name="llava_next_yi",
+    format_user=StringFormatter(slots=["<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"]),
+    format_system=StringFormatter(slots=["<|im_start|>system\n{{content}}<|im_end|>\n"]),
+    format_separator=EmptyFormatter(slots=["\n"]),
+    stop_words=["<|im_end|>"],
+    replace_eos=True,
+    mm_plugin=get_mm_plugin(name="llava_next", image_token="<image>"),
+)
+
+
+_register_template(
+    name="llava_next_video",
+    format_user=StringFormatter(slots=["USER: {{content}} ASSISTANT:"]),
+    default_system=(
+        "A chat between a curious user and an artificial intelligence assistant. "
+        "The assistant gives helpful, detailed, and polite answers to the user's questions."
+    ),
+    mm_plugin=get_mm_plugin(name="llava_next_video", image_token="<image>", video_token="<video>"),
+)
+
+
+_register_template(
+    name="llava_next_video_mistral",
+    format_user=StringFormatter(slots=["[INST] {{content}} [/INST]"]),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
+    mm_plugin=get_mm_plugin(name="llava_next_video", image_token="<image>", video_token="<video>"),
+)
+
+
+_register_template(
+    name="llava_next_video_yi",
+    format_user=StringFormatter(slots=["<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"]),
+    format_system=StringFormatter(slots=["<|im_start|>system\n{{content}}<|im_end|>\n"]),
+    format_separator=EmptyFormatter(slots=["\n"]),
+    stop_words=["<|im_end|>"],
+    replace_eos=True,
+    mm_plugin=get_mm_plugin(name="llava_next_video", image_token="<image>", video_token="<video>"),
+)
+
+
+_register_template(
     name="mistral",
     format_user=StringFormatter(slots=["[INST] {{content}} [/INST]"]),
     format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
@@ -825,6 +939,25 @@ _register_template(
     format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
     stop_words=["<|end|>"],
     replace_eos=True,
+)
+
+
+_register_template(
+    name="phi_small",
+    format_user=StringFormatter(slots=["<|user|>\n{{content}}<|end|>\n<|assistant|>\n"]),
+    format_system=StringFormatter(slots=["<|system|>\n{{content}}<|end|>\n"]),
+    format_separator=EmptyFormatter(slots=["\n"]),
+    format_prefix=EmptyFormatter(slots=[{"<|endoftext|>"}]),
+    stop_words=["<|end|>"],
+    replace_eos=True,
+)
+
+
+_register_template(
+    name="pixtral",
+    format_user=StringFormatter(slots=["[INST] {{content}} [/INST]"]),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
+    mm_plugin=get_mm_plugin(name="pixtral", image_token="[IMG]"),
 )
 
 
@@ -903,6 +1036,17 @@ _register_template(
         "A chat between a curious user and an artificial intelligence assistant. "
         "The assistant gives helpful, detailed, and polite answers to the user's questions."
     ),
+)
+
+
+_register_template(
+    name="video_llava",
+    format_user=StringFormatter(slots=["USER: {{content}} ASSISTANT:"]),
+    default_system=(
+        "A chat between a curious user and an artificial intelligence assistant. "
+        "The assistant gives helpful, detailed, and polite answers to the user's questions."
+    ),
+    mm_plugin=get_mm_plugin(name="video_llava", image_token="<image>", video_token="<video>"),
 )
 
 
