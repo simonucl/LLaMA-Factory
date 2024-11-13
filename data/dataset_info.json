@@ -644,5 +644,10 @@
       "response": "output",
       "system": "system_prompt"
     }
+  },
+  "gemma_helpsteer_5": {
+    "hf_hub_url": "HanxuHU/gemma-2-9b-it-ultrafeedback-annotate-helpsteer-judge-5-llm",
+    "ranking": true,
+    "formatting": "sharegpt"
   }
 }
