@@ -703,5 +703,19 @@
     "hf_hub_url": "HanxuHU/gemma-2-9b-it-ultrafeedback-annotate-helpsteer-judge-5-llm",
     "ranking": true,
     "formatting": "sharegpt"
+  },
+  "llama-3.3-70b-ultrainteract": {
+	  "hf_hub_url": "simonycl/llama-3.3-70b-ultrainteract",
+	  "columns": {
+		  "prompt": "instruction",
+		  "response": "response"
+	  }
+  },
+  "qwen_2.5_70b_ultrainteract": {
+	  "hf_hub_url": "simonycl/qwen_2.5_70b_ultrainteract",
+	  "columns":{
+		  "prompt": "instruction",
+		  "response": "response"
+	  }
   }
 }
