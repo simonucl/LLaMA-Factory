@@ -705,7 +705,7 @@
     "formatting": "sharegpt"
   },
   "llama-3.3-70b-ultrainteract": {
-	  "hf_hub_url": "simonycl/llama-3.3-70b-ultrainteract",
+	  "hf_hub_url": "simonycl/llama-3.3-70b-ultrainteract-filtered",
 	  "columns": {
 		  "prompt": "instruction",
 		  "response": "response"
