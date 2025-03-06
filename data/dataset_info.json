@@ -717,5 +717,9 @@
 		  "prompt": "instruction",
 		  "response": "response"
 	  }
+  },
+  "persuasion_simulation": {
+    "hf_hub_url": "simonycl/persuasion_simulation",
+    "format": "sharegpt"
   }
 }
