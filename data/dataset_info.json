@@ -528,7 +528,7 @@
     }
   },
   "cmv_good_persuasion": {
-    "hf_hub_url": "simonycl/cmv_good_persuasion",
+    "hf_hub_url": "simonycl/good_persuasion",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages"
@@ -541,7 +541,7 @@
     }
   },
   "cmv_bad_persuasion": {
-    "hf_hub_url": "simonycl/cmv_bad_persuasion",
+    "hf_hub_url": "simonycl/bad_persuasion",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages"
@@ -554,7 +554,20 @@
     }
   },
   "cmv_evil_persuasion": {
-    "hf_hub_url": "simonycl/cmv_evil_persuasion",
+    "hf_hub_url": "simonycl/controversial_persuasion",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "cmv_neutral_persuasion": {
+    "hf_hub_url": "simonycl/neutral_persuasion",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages"
