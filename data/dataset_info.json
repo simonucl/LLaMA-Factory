@@ -527,6 +527,45 @@
       "rejected": "rejected"
     }
   },
+  "cmv_good_persuasion": {
+    "hf_hub_url": "simonycl/cmv_good_persuasion",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "cmv_bad_persuasion": {
+    "hf_hub_url": "simonycl/cmv_bad_persuasion",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "cmv_evil_persuasion": {
+    "hf_hub_url": "simonycl/cmv_evil_persuasion",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
   "coig_p": {
     "hf_hub_url": "m-a-p/COIG-P",
     "ranking": true,
