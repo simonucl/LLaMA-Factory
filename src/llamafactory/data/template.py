@@ -1958,3 +1958,10 @@ register_template(
     format_user=StringFormatter(slots=["<human>:{{content}}\n<bot>:"]),
     format_assistant=StringFormatter(slots=["{{content}}\n"]),
 )
+
+register_template(
+    name="octothinker",
+    format_user=StringFormatter(slots=["{{content}}"]),
+    format_assistant=StringFormatter(slots=["{{content}}", {"eos_token"}]),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}])
+)
