@@ -780,5 +780,109 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+  "sft_qwen3_game_eval_5k_whole": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_5k_whole",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_5k_win_only": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_5k_win_only",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_15k_whole": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_15k_whole",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_15k_win_only": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_15k_win_only",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_30k_whole": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_30k_whole",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_30k_win_only": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_30k_win_only",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_60k_whole": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_60k_whole",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sft_qwen3_game_eval_60k_win_only": {
+    "hf_hub_url": "simonycl/sft-qwen3-game-eval-Qwen-QwQ-32B-vs-Qwen-QwQ-32B-20250729-131038_60k_win_only",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
   }
 }
