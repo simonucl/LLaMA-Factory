@@ -1,7 +1,11 @@
 #!/bin/bash
 # Sequential Training Script for Qwen3-4B Game Evaluation SFT
 # Runs all training configurations in order from smallest to largest dataset
-set -e  # Exit on error
+# 
+# INTERACTIVE SESSION SAFE VERSION:
+# - set -e removed to prevent interactive session termination
+# - Added proper error handling and graceful interruption handling
+# - Script will continue interactive session even if trainings fail
 
 # Colors for output
 RED='\033[0;31m'
@@ -45,6 +49,16 @@ log_warning() {
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LLAMAFACTORY_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Trap to handle interruptions gracefully
+cleanup() {
+    echo ""
+    log_warning "Script interrupted. Interactive session will continue."
+    log "You can restart from the next config using --start-from $((config_num + 1))"
+    exit 0
+}
+
+trap cleanup INT TERM
 
 # Configuration
 SKIP_ON_ERROR=${SKIP_ON_ERROR:-false}
@@ -144,9 +158,14 @@ for i in "${!configs[@]}"; do
         continue
     fi
     
-    # Execute training
+    # Execute training with proper error handling
     log "Executing: $train_cmd"
-    if eval "$train_cmd"; then
+    set +e  # Temporarily disable exit on error for this command
+    eval "$train_cmd"
+    training_exit_code=$?
+    set -e  # Re-enable exit on error
+    
+    if [[ $training_exit_code -eq 0 ]]; then
         config_end_time=$(date +%s)
         config_duration=$((config_end_time - config_start_time))
         log_success "Training $config completed in ${config_duration}s"
@@ -154,11 +173,12 @@ for i in "${!configs[@]}"; do
     else
         config_end_time=$(date +%s)
         config_duration=$((config_end_time - config_start_time))
-        log_error "Training $config failed after ${config_duration}s"
+        log_error "Training $config failed after ${config_duration}s (exit code: $training_exit_code)"
         ((failed_trainings++))
         
         if [[ $SKIP_ON_ERROR == "false" ]]; then
             log_error "Stopping sequential training due to failure"
+            log_warning "Interactive session will continue - you can restart from config $((config_num + 1)) using --start-from $((config_num + 1))"
             break
         else
             log_warning "Continuing to next training (skip-on-error enabled)"
@@ -180,11 +200,4 @@ if [[ $failed_trainings -gt 0 ]]; then
     log_error "Failed trainings: $failed_trainings"
 else
     log "Failed trainings: $failed_trainings"
-fi
-
-# Exit with appropriate code
-if [[ $failed_trainings -gt 0 && $SKIP_ON_ERROR == "false" ]]; then
-    exit 1
-else
-    exit 0
 fi
