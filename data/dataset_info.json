@@ -923,5 +923,18 @@
       "user_tag": "user",
       "assistant_tag": "assistant"
     }
+  },
+  "sft_deepseek_spiral": {
+    "hf_hub_url": "simonycl/self-play-sft-deepseek-distill-Qwen-Qwen3-32B",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
   }
 }
