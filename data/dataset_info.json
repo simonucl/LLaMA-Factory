@@ -1067,6 +1067,97 @@
       "assistant_tag": "assistant"
     }
   },
+  "aime_training_positive_direct_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_direct_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "aime_training_positive_direct_cot_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_direct_cot_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "aime_training_positive_multi_turn_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_multi_turn_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "aime_training_positive_sequence_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_sequence_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "aime_training_positive_vs_standard_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_vs_standard_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "aime_training_positive_vs_cot_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_vs_cot_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "aime_training_positive_vs_multi_gpt-4.1": {
+    "hf_hub_url": "simonycl/aime_training_positive_vs_multi_gpt-4.1",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
   "sft_deepseek_spiral": {
     "hf_hub_url": "simonycl/self-play-sft-deepseek-distill-Qwen-Qwen3-32B",
     "formatting": "sharegpt",
